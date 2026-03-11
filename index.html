@@ -25,15 +25,7 @@
     html { scroll-behavior: smooth; }
     body { font-family: 'Sora', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
 
-    /* LOADING SCREEN */
-    #loading-screen { position: fixed; inset: 0; background: var(--navy); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; transition: opacity 0.5s ease; }
-    #loading-screen.hide { opacity: 0; pointer-events: none; }
-    .load-logo { width: 64px; height: 64px; border-radius: 50%; border: 2px solid rgba(0,201,167,0.4); padding: 4px; }
-    .load-logo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-    .load-title { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
-    .load-bar { width: 160px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; }
-    .load-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 99px; animation: loadPulse 1.4s ease-in-out infinite; }
-    @keyframes loadPulse { 0%{width:0%} 50%{width:80%} 100%{width:100%} }
+
 
     /* HEADER */
     .site-header { position: relative; background: var(--navy); overflow: hidden; }
@@ -254,12 +246,7 @@
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
-<div id="loading-screen">
-  <div class="load-logo"><img src="https://lh3.googleusercontent.com/d/1gkq2KUDeSahQT9db8KgIs6HtDotaeao1" alt="MDPH"></div>
-  <div class="load-title">MDPH — Memuatkan Data...</div>
-  <div class="load-bar"><div class="load-bar-fill"></div></div>
-</div>
+
 
 <!-- HEADER -->
 <header class="site-header">
@@ -457,7 +444,7 @@
       <div class="fg"><label>Kategori</label>
         <select id="f-category"><option value="">Pilih Kategori</option><option>Infrastruktur</option><option>Kemudahan Awam</option><option>Landskap & Rekreasi</option><option>Saliran & Perparitan</option><option>Pencahayaan</option></select>
       </div>
-      <div class="fg full"><label>Rujukan Kelulusan Kementerian</label><input type="text" id="f-alloc-ref" placeholder=""</div>
+      <div class="fg full"><label>Rujukan Kelulusan Kementerian</label><input type="text" id="f-alloc-ref" placeholder=""></div>
       <div class="fg full"><label>Jumlah Peruntukan Diluluskan (RM)</label><div class="pfxw"><span class="pfx">RM</span><input type="number" id="f-alloc-amt" min="0" step="0.01" placeholder="0.00"></div></div>
       <div class="fg"><label>Kos Projek (RM)</label><div class="pfxw"><span class="pfx">RM</span><input type="number" id="f-cost" min="0" step="0.01" placeholder="0.00"></div></div>
       <div class="fg"><label>Kemajuan (%)</label><input type="number" id="f-progress" min="0" max="100" placeholder="0 – 100"></div>
@@ -510,22 +497,14 @@
   });
 
   // ── LOAD (realtime listener) ───────────────────────────────────────────────
-  function hideLoader() {
-    const ls = document.getElementById('loading-screen');
-    ls.classList.add('hide');
-    setTimeout(() => ls.remove(), 600);
-  }
-
   const q = query(collection(db, COL), orderBy("created_at", "asc"));
   onSnapshot(q, (snapshot) => {
     allP = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     apply();
     renderAll();
-    hideLoader();
   }, (err) => {
     console.error("Firestore error:", err);
     toast("Ralat sambungan ke pangkalan data.", true);
-    hideLoader();
   });
 
   // ── TOAST ─────────────────────────────────────────────────────────────────
