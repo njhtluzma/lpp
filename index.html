@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MDPH — Laporan Prestasi Projek</title>
+  <title>Laporan Prestasi Projek — MDPH</title>
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -24,8 +24,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { font-family: 'Sora', sans-serif; background: var(--surface); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
-
-
 
     /* HEADER */
     .site-header { position: relative; background: var(--navy); overflow: hidden; }
@@ -246,8 +244,6 @@
 </head>
 <body>
 
-
-
 <!-- HEADER -->
 <header class="site-header">
   <div class="hdr-accent"></div>
@@ -358,7 +354,7 @@
             <th class="r sth" onclick="sortTable('kos')">Kos (RM) <span class="si" id="sort-kos">↕</span></th>
             <th class="c sth" onclick="sortTable('kemajuan')">Kemajuan <span class="si" id="sort-kemajuan">↕</span></th>
             <th class="c">Status</th>
-            <th class="c no-print">Aksi</th>
+            <th class="c no-print">Tindakan</th>
           </tr></thead>
           <tbody id="projects-table-body">
             <tr><td colspan="11"><div class="empty">
@@ -471,7 +467,6 @@
     getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy
   } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-  // ── FIREBASE CONFIG ────────────────────────────────────────────────────────
   const firebaseConfig = {
     apiKey: "AIzaSyDuiAVFYdf9yE7lNh5M74MHILAvXt3sbCA",
     authDomain: "lppmdph.firebaseapp.com",
@@ -486,17 +481,14 @@
   const db = getFirestore(app);
   const COL = "projek_mdph";
 
-  // ── STATE ──────────────────────────────────────────────────────────────────
   let allP = [], filtP = [], curFilter = 'all', curSearch = '', sField = null, sDir = 'asc';
 
-  // ── INIT ───────────────────────────────────────────────────────────────────
   document.getElementById('header-date').textContent =
     new Date().toLocaleDateString('ms-MY', { day:'numeric', month:'long', year:'numeric' });
   document.getElementById('modal-overlay').addEventListener('click', e => {
     if (e.target.id === 'modal-overlay') closeModal();
   });
 
-  // ── LOAD (realtime listener) ───────────────────────────────────────────────
   const q = query(collection(db, COL), orderBy("created_at", "asc"));
   onSnapshot(q, (snapshot) => {
     allP = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -507,7 +499,6 @@
     toast("Ralat sambungan ke pangkalan data.", true);
   });
 
-  // ── TOAST ─────────────────────────────────────────────────────────────────
   window.toast = function(m, err=false) {
     document.querySelectorAll('.toast').forEach(t => t.remove());
     const el = document.createElement('div');
@@ -516,6 +507,11 @@
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 3000);
   };
+
+  function resetSubmitBtn() {
+    document.getElementById('submit-spinner').classList.add('hidden');
+    document.getElementById('submit-btn').disabled = false;
+  }
 
   // ── MODAL ─────────────────────────────────────────────────────────────────
   window.openAddModal = function() {
@@ -543,17 +539,20 @@
     document.getElementById('f-start').value = p.tarikh_mula;
     document.getElementById('f-end').value = p.tarikh_siap;
     document.getElementById('f-contractor').value = p.kontraktor;
+    resetSubmitBtn();
     document.getElementById('modal-overlay').classList.add('on');
   };
 
   window.closeModal = function() {
     document.getElementById('modal-overlay').classList.remove('on');
+    resetSubmitBtn();
   };
 
   function clearForm() {
     ['f-name','f-location','f-category','f-alloc-ref','f-alloc-amt',
      'f-cost','f-progress','f-status','f-start','f-end','f-contractor']
       .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    resetSubmitBtn();
   }
 
   // ── CRUD ───────────────────────────────────────────────────────────────────
@@ -576,33 +575,36 @@
     }
     if (prog < 0 || prog > 100) { toast('Kemajuan mestilah antara 0 dan 100.', true); return; }
 
+    // Show spinner briefly for feedback, then close modal immediately.
+    // Firestore performs an optimistic local write so onSnapshot fires and
+    // updates the table before the server round-trip completes — no need to
+    // block the UI waiting for server confirmation.
     const sp  = document.getElementById('submit-spinner');
     const btn = document.getElementById('submit-btn');
-    sp.classList.remove('hidden'); btn.disabled = true;
+    sp.classList.remove('hidden');
+    btn.disabled = true;
 
-    try {
-      const data = {
-        nama_projek: name, lokasi: loc, kategori: cat,
-        rujukan_peruntukan: ref, jumlah_peruntukan: amt,
-        kos: cost, kemajuan: prog, status,
-        tarikh_mula: start, tarikh_siap: end, kontraktor: con
-      };
+    const data = {
+      nama_projek: name, lokasi: loc, kategori: cat,
+      rujukan_peruntukan: ref, jumlah_peruntukan: amt,
+      kos: cost, kemajuan: prog, status,
+      tarikh_mula: start, tarikh_siap: end, kontraktor: con
+    };
+    if (!eid) data.created_at = Date.now();
 
-      if (eid) {
-        await updateDoc(doc(db, COL, eid), data);
-        toast('Projek berjaya dikemaskini!');
-      } else {
-        data.created_at = Date.now();
-        await addDoc(collection(db, COL), data);
-        toast('Projek berjaya ditambah!');
-      }
-      closeModal();
-    } catch(e) {
-      console.error(e);
-      toast('Ralat menyimpan data. Cuba lagi.', true);
-    } finally {
-      sp.classList.add('hidden'); btn.disabled = false;
-    }
+    // ── FIX: close modal right away so the button never appears stuck ──────
+    closeModal();
+
+    const writePromise = eid
+      ? updateDoc(doc(db, COL, eid), data)
+      : addDoc(collection(db, COL), data);
+
+    writePromise
+      .then(() => toast(eid ? 'Projek berjaya dikemaskini!' : 'Projek berjaya ditambah!'))
+      .catch(e => {
+        console.error(e);
+        toast('Ralat menyimpan data. Cuba lagi.', true);
+      });
   };
 
   window.confirmDelete = function(id) {
@@ -713,7 +715,7 @@
           <div class="alloc-val mono">${alc > 0 ? `RM ${fmtN(alc)}` : '—'}</div>
           ${p.rujukan_peruntukan ? `<div class="alloc-ref" title="${p.rujukan_peruntukan}">${p.rujukan_peruntukan}</div>` : ''}
         </td>
-        <td class="r mono ${ov ? 'over' : ''}">${fmtN(p.kos)}${ov ? ' <span style="font-size:.65rem" title="Melebihi peruntukan">⚠</span>' : ''}</td>
+        <td class="r mono ${ov ? 'over' : ''}">${parseFloat(p.kos) > 0 ? `RM ${fmtN(p.kos)}` : '—'}${ov ? ' <span style="font-size:.65rem" title="Melebihi peruntukan">⚠</span>' : ''}</td>
         <td class="c"><div class="prog-wrap"><div class="prog-track"><div class="prog-fill ${pCls(p.kemajuan)}" style="width:${p.kemajuan}%"></div></div><span class="prog-lbl">${p.kemajuan}%</span></div></td>
         <td class="c">${sBadge(p.status)}</td>
         <td class="c no-print">
@@ -785,7 +787,6 @@
     circ.style.stroke = cp >= 70 ? '#00c9a7' : cp >= 40 ? '#f59e0b' : '#f43f5e';
   }
 
-  // ── CSV EXPORT ─────────────────────────────────────────────────────────────
   window.exportCSV = function() {
     if (!allP.length) { toast('Tiada data untuk dieksport.', true); return; }
     const h = ['Bil','Nama Projek','Lokasi','Kategori','Kontraktor','Tarikh Mula','Tarikh Siap','Rujukan Kelulusan','Peruntukan (RM)','Kos (RM)','Kemajuan (%)','Status'];
