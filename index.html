@@ -302,6 +302,7 @@
       </div>
     </div>
     <div class="pw-title">Log Masuk</div>
+    <div class="pw-sub">Masukkan kata laluan untuk mengakses dashboard projek.</div>
     <div id="pw-err" class="pw-err">&#x26A0; Kata laluan tidak sah. Sila cuba lagi.</div>
     <label class="pw-label" for="pw-input">Kata Laluan</label>
     <div class="pw-field">
@@ -969,6 +970,7 @@ function buildPrintHTML(projects) {
     <div class="sum-box"><div class="sum-lbl">Siap</div><div class="sum-val">${projects.filter(p => p.status === 'Siap').length}</div></div>
     <div class="sum-box"><div class="sum-lbl">Jumlah Kos Projek</div><div class="sum-val">RM ${fmtN(totalKos)}</div></div>
     <div class="sum-box"><div class="sum-lbl">Kos Projek Siap</div><div class="sum-val">RM ${fmtN(projects.filter(p => p.status === 'Siap').reduce((s,p) => s + (parseFloat(p.kos)||0), 0))}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Kos Yang Diluluskan</div><div class="sum-val">RM ${fmtN(projects.filter(p => (parseFloat(p.jumlah_peruntukan)||0) > 0).reduce((s,p) => s + (parseFloat(p.jumlah_peruntukan)||0), 0))}</div></div>
     <div class="sum-box"><div class="sum-lbl">Jumlah Peruntukan</div><div class="sum-val">RM ${fmtN(totalAlc)}</div></div>
     <div class="sum-box"><div class="sum-lbl">Dalam Pelaksanaan</div><div class="sum-val">${projects.filter(p => p.status === 'Dalam Pelaksanaan').length}</div></div>
     <div class="sum-box"><div class="sum-lbl">Tertangguh</div><div class="sum-val">${projects.filter(p => p.status === 'Tertangguh').length}</div></div>
@@ -1139,7 +1141,7 @@ document.getElementById('psel-print-btn').addEventListener('click', () => {
 
 // ─── PASSWORD GATE ────────────────────────────────────────────────────────────
 (function() {
-  const CORRECT = 'mdph2222';   // ← tukar kata laluan di sini
+  const CORRECT = 'mdph2026';   // ← tukar kata laluan di sini
 
   const gate     = document.getElementById('pw-gate');
   const input    = document.getElementById('pw-input');
