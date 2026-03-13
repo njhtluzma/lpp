@@ -104,13 +104,13 @@
     tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
     tbody tr:last-child{border-bottom:none}
     tbody tr:hover{background:#f7fbff}
-    td{padding:9px 8px;font-size:.74rem;color:var(--text-primary);vertical-align:middle;overflow:hidden;text-overflow:ellipsis}
+    td{padding:9px 8px;font-size:.74rem;color:var(--text-primary);vertical-align:middle;word-break:break-word}
     td.r{text-align:right}td.c{text-align:center}
-    .pn{font-weight:700;font-size:.76rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pc{font-size:.62rem;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pn{font-weight:700;font-size:.76rem;word-break:break-word}.pc{font-size:.62rem;color:var(--text-muted);margin-top:2px;word-break:break-word}
     .mono{font-family:'DM Mono',monospace;font-size:.7rem}
     .alloc-val{font-weight:700;color:var(--accent-2)}
-    .alloc-ref-cell{font-size:.65rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .catatan-cell{font-size:.65rem;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .alloc-ref-cell{font-size:.65rem;color:var(--text-secondary);word-break:break-word}
+    .catatan-cell{font-size:.65rem;color:var(--text-secondary);word-break:break-word}
     .over{color:var(--rose);font-weight:700}
     .prog-wrap{display:flex;align-items:center;gap:5px}
     .prog-track{flex:1;height:6px;background:#e9eff8;border-radius:99px;overflow:hidden;min-width:40px}
@@ -653,10 +653,10 @@ function renderTable() {
     return `<tr>
       <td style="color:var(--text-muted);font-size:.68rem;font-weight:700">${i + 1}</td>
       <td><div class="pn" title="${p.nama_projek || ''}">${p.nama_projek || '—'}</div><div class="pc">${p.kategori || ''}</div></td>
-      <td style="color:var(--text-secondary);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.lokasi || ''}">${p.lokasi || '—'}</td>
-      <td style="white-space:nowrap;color:var(--text-secondary);font-size:.7rem">${fmtD(p.tarikh_mula)}</td>
-      <td style="white-space:nowrap;color:var(--text-secondary);font-size:.7rem">${fmtD(p.tarikh_siap)}</td>
-      <td style="color:var(--text-secondary);font-size:.72rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.kontraktor || ''}">${p.kontraktor || '—'}</td>
+      <td style="color:var(--text-secondary);font-size:.72rem;word-break:break-word" title="${p.lokasi || ''}">${p.lokasi || '—'}</td>
+      <td style="color:var(--text-secondary);font-size:.7rem">${fmtD(p.tarikh_mula)}</td>
+      <td style="color:var(--text-secondary);font-size:.7rem">${fmtD(p.tarikh_siap)}</td>
+      <td style="color:var(--text-secondary);font-size:.72rem;word-break:break-word" title="${p.kontraktor || ''}">${p.kontraktor || '—'}</td>
       <td class="r"><div class="alloc-val mono">${alc > 0 ? 'RM ' + fmtN(alc) : '<span style="color:var(--text-muted)">—</span>'}</div></td>
       <td><div class="alloc-ref-cell" title="${p.rujukan_peruntukan || ''}">${p.rujukan_peruntukan || '<span style="color:var(--text-muted)">—</span>'}</div></td>
       <td class="r mono ${ov ? 'over' : ''}">${kos > 0 ? 'RM ' + fmtN(kos) : '—'}${ov ? ' <span title="Melebihi peruntukan">⚠</span>' : ''}</td>
