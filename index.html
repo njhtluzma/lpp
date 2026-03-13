@@ -937,7 +937,7 @@ function buildPrintHTML(projects) {
   return `<!doctype html><html lang="ms"><head><meta charset="UTF-8"><title>Laporan Projek MDPH</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,sans-serif;font-size:10px;color:#111;padding:20px}
+    body{font-family:Arial,sans-serif;font-size:10px;color:#111;padding:20px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .print-header{display:flex;align-items:center;gap:14px;border-bottom:2px solid #0a1628;padding-bottom:12px;margin-bottom:14px}
     .print-header img{width:52px;height:52px;border-radius:50%}
     .print-org{font-size:13px;font-weight:800;color:#0a1628}.print-addr{font-size:9px;color:#555;margin-top:2px}
@@ -947,10 +947,11 @@ function buildPrintHTML(projects) {
     .sum-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:3px}
     .sum-val{font-size:13px;font-weight:800;color:#0a1628}
     table{width:100%;border-collapse:collapse;font-size:9px}
-    th{background:#0a1628;color:white;padding:6px 7px;text-align:left;font-size:8px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+    th{background:#0a1628 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:white !important;padding:6px 7px;text-align:left;font-size:8px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
     td{padding:6px 7px;border-bottom:1px solid #eee;vertical-align:top}
-    tr:nth-child(even) td{background:#f8fafd}
+    tr:nth-child(even) td{background:#f8fafd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .footer{margin-top:18px;border-top:1px solid #ddd;padding-top:10px;display:flex;justify-content:space-between;font-size:8px;color:#888}
+    @media print{th{background:#0a1628 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:white !important}}
   </style></head><body>
   <div class="print-header">
     <img src="https://lh3.googleusercontent.com/d/1gkq2KUDeSahQT9db8KgIs6HtDotaeao1" alt="Logo">
