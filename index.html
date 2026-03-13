@@ -250,9 +250,71 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
     @media print{.fab,.no-print{display:none!important}body{background:white}}
+
+    /* PASSWORD GATE */
+    .pw-gate{position:fixed;inset:0;z-index:9999;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:20px}
+    .pw-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,201,167,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,201,167,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+    .pw-orb1{position:absolute;top:-100px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,201,167,.1) 0%,transparent 70%);pointer-events:none}
+    .pw-orb2{position:absolute;bottom:-80px;left:10%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.08) 0%,transparent 70%);pointer-events:none}
+    .pw-box{position:relative;z-index:2;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:44px 40px;width:100%;max-width:420px;backdrop-filter:blur(12px);box-shadow:0 32px 80px rgba(0,0,0,.4);animation:modalIn .4s cubic-bezier(.34,1.56,.64,1) both}
+    .pw-logo{display:flex;align-items:center;gap:14px;margin-bottom:32px}
+    .pw-logo-ring{width:56px;height:56px;flex-shrink:0;border-radius:50%;border:2px solid rgba(0,201,167,.4);padding:3px;background:rgba(255,255,255,.05)}
+    .pw-logo-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+    .pw-org{font-size:.85rem;font-weight:800;color:#fff;letter-spacing:.01em;line-height:1.3}
+    .pw-org small{display:block;font-size:.65rem;color:rgba(255,255,255,.4);font-weight:400;margin-top:3px}
+    .pw-title{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:6px}
+    .pw-sub{font-size:.78rem;color:rgba(255,255,255,.45);margin-bottom:28px}
+    .pw-label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:7px}
+    .pw-field{position:relative;margin-bottom:16px}
+    .pw-field input{width:100%;padding:13px 48px 13px 16px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-size:.9rem;font-family:'Sora',sans-serif;transition:border-color .2s,background .2s}
+    .pw-field input::placeholder{color:rgba(255,255,255,.25)}
+    .pw-field input:focus{outline:none;border-color:var(--accent);background:rgba(255,255,255,.12)}
+    .pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);padding:0;display:flex;align-items:center;transition:color .15s}
+    .pw-eye:hover{color:rgba(255,255,255,.7)}
+    .pw-eye svg{width:18px;height:18px}
+    .pw-btn{width:100%;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#059669);color:white;font-weight:800;font-size:.9rem;border:none;cursor:pointer;font-family:'Sora',sans-serif;letter-spacing:.02em;box-shadow:0 8px 24px rgba(0,201,167,.3);transition:transform .2s,box-shadow .2s;margin-top:4px}
+    .pw-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,201,167,.4)}
+    .pw-btn:active{transform:none}
+    .pw-err{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);border-radius:10px;padding:10px 14px;font-size:.75rem;color:#fda4af;font-weight:600;margin-bottom:14px;display:none;animation:fadeUp .2s ease}
+    .pw-err.on{display:block}
+    .pw-footer{text-align:center;margin-top:22px;font-size:.68rem;color:rgba(255,255,255,.2)}
+    .pw-gate.unlocking{animation:pwFadeOut .4s ease forwards;pointer-events:none}
+    @keyframes pwFadeOut{to{opacity:0}}
+    .pw-shake{animation:pwShake .4s ease}
+    @keyframes pwShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
   </style>
 </head>
 <body>
+
+<!-- PASSWORD GATE -->
+<div id="pw-gate" class="pw-gate">
+  <div class="pw-bg-grid"></div>
+  <div class="pw-orb1"></div>
+  <div class="pw-orb2"></div>
+  <div class="pw-box" id="pw-box">
+    <div class="pw-logo">
+      <div class="pw-logo-ring">
+        <img src="https://lh3.googleusercontent.com/d/1gkq2KUDeSahQT9db8KgIs6HtDotaeao1" alt="MDPH Logo">
+      </div>
+      <div class="pw-org">
+        MAJLIS DAERAH PENGKALAN HULU
+        <small>Sistem Pemantauan Projek</small>
+      </div>
+    </div>
+    <div class="pw-title">Log Masuk</div>
+    <div id="pw-err" class="pw-err">&#x26A0; Kata laluan tidak sah. Sila cuba lagi.</div>
+    <label class="pw-label" for="pw-input">Kata Laluan</label>
+    <div class="pw-field">
+      <input type="password" id="pw-input" placeholder="Masukkan kata laluan..." autocomplete="current-password">
+      <button class="pw-eye" id="pw-eye-btn" tabindex="-1" type="button">
+        <svg id="pw-eye-show" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        <svg id="pw-eye-hide" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+      </button>
+    </div>
+    <button class="pw-btn" id="pw-submit-btn">Masuk &rarr;</button>
+    <div class="pw-footer">&copy; 2026 MDPH &mdash; Akses Terhad</div>
+  </div>
+</div>
 
 <!-- HEADER -->
 <header class="site-header">
@@ -880,8 +942,8 @@ function buildPrintHTML(projects) {
     .print-header img{width:52px;height:52px;border-radius:50%}
     .print-org{font-size:13px;font-weight:800;color:#0a1628}.print-addr{font-size:9px;color:#555;margin-top:2px}
     .print-title{font-size:15px;font-weight:800;color:#0a1628;margin-bottom:3px}.print-sub{font-size:9px;color:#666}
-    .summary{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-    .sum-box{flex:1;min-width:80px;border:1px solid #ddd;border-radius:6px;padding:8px 10px}
+    .summary{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .sum-box{flex:1;min-width:100px;border:1px solid #ddd;border-radius:6px;padding:8px 10px}
     .sum-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-bottom:3px}
     .sum-val{font-size:13px;font-weight:800;color:#0a1628}
     table{width:100%;border-collapse:collapse;font-size:9px}
@@ -904,10 +966,11 @@ function buildPrintHTML(projects) {
   <div class="summary">
     <div class="sum-box"><div class="sum-lbl">Jumlah Projek</div><div class="sum-val">${projects.length}</div></div>
     <div class="sum-box"><div class="sum-lbl">Siap</div><div class="sum-val">${projects.filter(p => p.status === 'Siap').length}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Jumlah Kos Projek</div><div class="sum-val">RM ${fmtN(totalKos)}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Kos Projek Siap</div><div class="sum-val">RM ${fmtN(projects.filter(p => p.status === 'Siap').reduce((s,p) => s + (parseFloat(p.kos)||0), 0))}</div></div>
+    <div class="sum-box"><div class="sum-lbl">Jumlah Peruntukan</div><div class="sum-val">RM ${fmtN(totalAlc)}</div></div>
     <div class="sum-box"><div class="sum-lbl">Dalam Pelaksanaan</div><div class="sum-val">${projects.filter(p => p.status === 'Dalam Pelaksanaan').length}</div></div>
     <div class="sum-box"><div class="sum-lbl">Tertangguh</div><div class="sum-val">${projects.filter(p => p.status === 'Tertangguh').length}</div></div>
-    <div class="sum-box"><div class="sum-lbl">Jumlah Peruntukan</div><div class="sum-val">RM ${fmtN(totalAlc)}</div></div>
-    <div class="sum-box"><div class="sum-lbl">Jumlah Kos</div><div class="sum-val">RM ${fmtN(totalKos)}</div></div>
   </div>
   <table>
     <thead><tr>
@@ -1072,6 +1135,49 @@ document.getElementById('psel-print-btn').addEventListener('click', () => {
   openPrintWin(buildPrintHTML(allP.filter(p => pselSelected.has(p.id))));
 });
 
+
+// ─── PASSWORD GATE ────────────────────────────────────────────────────────────
+(function() {
+  const CORRECT = 'mdph2222';   // ← tukar kata laluan di sini
+
+  const gate     = document.getElementById('pw-gate');
+  const input    = document.getElementById('pw-input');
+  const submitBtn= document.getElementById('pw-submit-btn');
+  const errBox   = document.getElementById('pw-err');
+  const eyeBtn   = document.getElementById('pw-eye-btn');
+  const eyeShow  = document.getElementById('pw-eye-show');
+  const eyeHide  = document.getElementById('pw-eye-hide');
+  const box      = document.getElementById('pw-box');
+
+  // Focus input on load
+  setTimeout(() => input.focus(), 300);
+
+  function attempt() {
+    if (input.value === CORRECT) {
+      errBox.classList.remove('on');
+      gate.classList.add('unlocking');
+      setTimeout(() => gate.style.display = 'none', 400);
+    } else {
+      errBox.classList.add('on');
+      input.value = '';
+      input.focus();
+      box.classList.remove('pw-shake');
+      void box.offsetWidth; // reflow to restart animation
+      box.classList.add('pw-shake');
+    }
+  }
+
+  submitBtn.addEventListener('click', attempt);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); });
+
+  eyeBtn.addEventListener('click', () => {
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    eyeShow.style.display = isHidden ? 'none' : '';
+    eyeHide.style.display = isHidden ? '' : 'none';
+    input.focus();
+  });
+})();
 </script>
 </body>
 </html>
